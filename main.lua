@@ -51,6 +51,7 @@ function love.load()
   -- score
   score = 0
   upcomingPipe = 1
+  playing = false
 
   -- font style
   font = love.graphics.newFont('Fonts/DIMIS___.TTF', 50)
@@ -91,7 +92,7 @@ function love.load()
   grass = Ground(0, 375, 315, 15, green)
 
   -- coroutine
-  co = coroutine.create(Bird.cojump, player)
+  cojump = coroutine.create(Bird.cojump, player)
 
   function FirstPipes()
     -- pipe variables
@@ -117,57 +118,55 @@ end
 
 function love.update(dt)
   if playing then
-  
-  if pipe1.x + pipe1.width and pipe2.x + pipe2.width < 0 then
-    pipe1.x = WINDOW_WIDTH
-    pipe2.x = WINDOW_WIDTH
-    FirstPipes()
-  end
+    if pipe1.x + pipe1.width and pipe2.x + pipe2.width < 0 then
+      pipe1.x = WINDOW_WIDTH
+      pipe2.x = WINDOW_WIDTH
+      FirstPipes()
+    end
 
-  if pipe3.x + pipe3.width and pipe4.x + pipe4.width < 0 then
-    SecondPipes()
-    pipe3.x = WINDOW_WIDTH
-    pipe4.x = WINDOW_WIDTH
-  end
+    if pipe3.x + pipe3.width and pipe4.x + pipe4.width < 0 then
+      SecondPipes()
+      pipe3.x = WINDOW_WIDTH
+      pipe4.x = WINDOW_WIDTH
+    end
 
-  player:update(dt)
-  pipe1:update(dt)
-  pipe2:update(dt)
-  pipe3:update(dt)
-  pipe4:update(dt)
+    player:update(dt)
+    pipe1:update(dt)
+    pipe2:update(dt)
+    pipe3:update(dt)
+    pipe4:update(dt)
 
-  if player:collision(pipe1) then
-    love.load()
-    explosionSound:play()
-  elseif player:collision(pipe2) then
-    love.load()
-    explosionSound:play()
-  elseif player:collision(pipe3) then
-    love.load()
-    explosionSound:play()
-  elseif player:collision(pipe4) then
-    love.load()
-    explosionSound:play()
-  elseif player:collision(grass) then
-    love.load()
-    explosionSound:play()
-  end
+    if player:collision(pipe1) then
+      love.load()
+      explosionSound:play()
+    elseif player:collision(pipe2) then
+      love.load()
+      explosionSound:play()
+    elseif player:collision(pipe3) then
+      love.load()
+      explosionSound:play()
+    elseif player:collision(pipe4) then
+      love.load()
+      explosionSound:play()
+    elseif player:collision(grass) then
+      love.load()
+      explosionSound:play()
+    end
 
-  if upcomingPipe == 1 and player.x > (pipe1.x + pipe1.width) then
-    score = score + 1
-    upcomingPipe = 2
-    scoreSound:play()
-  end
-  if upcomingPipe == 2 and player.x > (pipe3.x + pipe3.width) then
-    score = score + 1
-    upcomingPipe = 1
-    scoreSound:play()
-  end
+    if upcomingPipe == 1 and player.x > (pipe1.x + pipe1.width) then
+      score = score + 1
+      upcomingPipe = 2
+      scoreSound:play()
+    end
+    if upcomingPipe == 2 and player.x > (pipe3.x + pipe3.width) then
+      score = score + 1
+      upcomingPipe = 1
+      scoreSound:play()
+    end
 
-  if (score > high_score) then
-    high_score = score
-  end
-
+    if (score > high_score) then
+      high_score = score
+    end
   end
 end
 
@@ -175,9 +174,13 @@ function love.keypressed(key)
   if gamemode == 0 then
     menu_inicial.keypressed(key)
   elseif gamemode == 1 then
-    playing = true
-    coroutine.resume(co, player)
-    jumpSound:play()
+    if key == 'space' then
+      playing = true
+      coroutine.resume(cojump, player)
+      jumpSound:play()
+    elseif key == 'p' and playing == true then
+      playing = false
+    end
   end
 end
 --------------------------------------[UPDATE]------------------------------------
@@ -201,6 +204,9 @@ function love.draw()
     love.graphics.setFont(font)
     love.graphics.print(score, 140, 50)
     love.graphics.print(string.format("MAX: %d",high_score), 120, 15, 0, 0.5)
+    if playing == false then
+      love.graphics.print("Pause", 125, 400, 0, 0.5)
+    end
   
     love.graphics.setColor(1, 1, 1)
   end
