@@ -3,6 +3,9 @@
 
 
 -- main.lua
+high_score = 0
+playing = false
+
 function love.load()
   -- colors
   skyBlue = {.43, .77, 80}
@@ -77,6 +80,8 @@ end
 --------------------------------------[UPDATE]------------------------------------
 
 function love.update(dt)
+  if playing then
+  
   if pipe1.x + pipe1.width and pipe2.x + pipe2.width < 0 then
     pipe1.x = WINDOW_WIDTH
     pipe2.x = WINDOW_WIDTH
@@ -122,13 +127,23 @@ function love.update(dt)
     upcomingPipe = 1
     scoreSound:play()
   end
+
+  if (score > high_score) then
+    high_score = score
+  end
+
+  end
 end
 
 function love.keypressed(key)
-  -- player:jump()
-  -- using coroutine
-  coroutine.resume(co, player)
-  jumpSound:play()
+  if playing then
+    coroutine.resume(co, player)
+    jumpSound:play()
+  else
+    playing = true
+    coroutine.resume(co, player)
+    jumpSound:play()
+  end
 end
 --------------------------------------[UPDATE]------------------------------------
 
@@ -147,6 +162,8 @@ function love.draw()
   love.graphics.setColor(0, 0, 0)
   love.graphics.setFont(font)
   love.graphics.print(score, 140, 50)
+  love.graphics.print(string.format("MAX: %d",high_score), 120, 15, 0, 0.5)
+  
   love.graphics.setColor(1, 1, 1)
 end
 --------------------------------------[DRAW]------------------------------------
