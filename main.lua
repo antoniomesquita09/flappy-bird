@@ -51,6 +51,9 @@ function love.load()
   dirt = Ground(0, 390, 315, 60, cream)
   grass = Ground(0, 375, 315, 15, green)
 
+  -- coroutine
+  co = coroutine.create(Bird.cojump, player)
+
   function FirstPipes()
     -- pipe variables
     local pipeSpaceYMin = -120
@@ -122,7 +125,9 @@ function love.update(dt)
 end
 
 function love.keypressed(key)
-  player:jump()
+  -- player:jump()
+  -- using coroutine
+  coroutine.resume(co, player)
   jumpSound:play()
 end
 --------------------------------------[UPDATE]------------------------------------

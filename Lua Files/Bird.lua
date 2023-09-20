@@ -21,6 +21,13 @@ function Bird:jump()
   end
 end
 
+Bird.cojump = function(self)
+  while self.y > 0 do
+    self.gravity = -265
+    coroutine.yield()
+  end
+end
+
 function Bird:collision(p)
   if self.x > p.x + p.width or p.x > self.x + self.width then
     return false
