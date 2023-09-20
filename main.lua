@@ -1,12 +1,48 @@
 -- Blocky Bird by Ardens
 -- Dec 25, 2020
 
-
 -- main.lua
+gamemode = 0
 high_score = 0
 playing = false
 
+function menu(w,h,x,y)
+  --menu background 
+  local menubackgroundImage = love.graphics.newImage('Assets/gamebackground.jpg')
+  -- font style
+  local font = love.graphics.newFont('Fonts/DIMIS___.TTF', 50)
+  return {
+    draw = function()
+      love.graphics.draw(menubackgroundImage, x, y)
+      grass:render()
+      dirt:render()
+      love.graphics.setColor(0, 0, 0)
+      love.graphics.setFont(font)
+      love.graphics.print("MENU", 100, 15)
+      love.graphics.print("START", 95, 105)
+      love.graphics.print("CONFIG", 90, 205)
+      love.graphics.setColor(1, 1, 1)
+    end,
+    keypressed = function(key)
+      if key == "space" and gamemode == 0 then
+        gamemode = 1
+      end
+      if key == "c" and gamemode == 0 then
+        gamemode = 2
+      end
+      
+    end
+  }
+end
+
 function love.load()
+  -- game screen dimensions
+  WINDOW_WIDTH = love.graphics.getWidth()
+  WINDOW_HEIGHT = love.graphics.getHeight()
+  
+  --menu
+  menu_inicial = menu(WINDOW_WIDTH,WINDOW_HEIGHT,0,0)
+  
   -- colors
   skyBlue = {.43, .77, 80}
   cream = {.87, .84, .58}
@@ -136,10 +172,9 @@ function love.update(dt)
 end
 
 function love.keypressed(key)
-  if playing then
-    coroutine.resume(co, player)
-    jumpSound:play()
-  else
+  if gamemode == 0 then
+    menu_inicial.keypressed(key)
+  elseif gamemode == 1 then
     playing = true
     coroutine.resume(co, player)
     jumpSound:play()
@@ -150,20 +185,25 @@ end
 
 --------------------------------------[DRAW]------------------------------------
 function love.draw()
-  love.graphics.draw(backgroundImage, 0, 0)
-  pipe1:render()
-  pipe2:render()
-  pipe3:render()
-  pipe4:render()
-  player:render()
-  grass:render()
-  dirt:render()
+  if gamemode == 0 then
+    menu_inicial.draw()
+  else
+    love.graphics.draw(backgroundImage, 0, 0)
+    pipe1:render()
+    pipe2:render()
+    pipe3:render()
+    pipe4:render()
+    player:render()
+    grass:render()
+    dirt:render()
 
-  love.graphics.setColor(0, 0, 0)
-  love.graphics.setFont(font)
-  love.graphics.print(score, 140, 50)
-  love.graphics.print(string.format("MAX: %d",high_score), 120, 15, 0, 0.5)
+    love.graphics.setColor(0, 0, 0)
+    love.graphics.setFont(font)
+    love.graphics.print(score, 140, 50)
+    love.graphics.print(string.format("MAX: %d",high_score), 120, 15, 0, 0.5)
   
-  love.graphics.setColor(1, 1, 1)
+    love.graphics.setColor(1, 1, 1)
+  end
+  
 end
 --------------------------------------[DRAW]------------------------------------
