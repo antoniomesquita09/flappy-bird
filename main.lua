@@ -29,6 +29,7 @@ function menu(x,y)
       love.graphics.print("MENU", menux, menuy)
       love.graphics.print("START", menux-5, menuy+90)
       love.graphics.print("CONFIG", menux-10, menuy+180)
+      love.graphics.print("SKINS", menux-5, menuy+270)
       love.graphics.setColor(1, 1, 1)
     end,
     keypressed = function(key)
@@ -38,12 +39,17 @@ function menu(x,y)
       if key == "c" and gamemode == 0 then
         gamemode = 2
       end
+      if key == "s" and gamemode == 0 then
+        gamemode = 3
+      end
     end, 
     mousepressed = function(mx,my,button)
-      if button == 1 and click_item(mx,my,menux-5,menuy+90) then
+      if button == 1 and gamemode ==0 and click_item(mx,my,menux-5,menuy+90) then
         gamemode = 1
-      elseif button == 1 and click_item(mx,my,menux-10,menuy+180) then
+      elseif button == 1 and gamemode ==0 and click_item(mx,my,menux-10,menuy+180) then
         gamemode = 2
+      elseif button == 1 and gamemode ==0 and click_item(mx,my,menux-5,menuy+270) then
+        gamemode = 3
       end
     end
   }
@@ -67,8 +73,12 @@ function config(x,y)
       love.graphics.setColor(0, 0, 0)
       love.graphics.setFont(font)
       love.graphics.print("CONFIG", configx, configy)
-      love.graphics.print("ITEM1", configx+5, configy+90)
-      love.graphics.print("ITEM2", configx+5, configy+180)
+      love.graphics.print("LEVEL:", 15, configy+90)
+      love.graphics.print("1", 20, configy+160)
+      love.graphics.print("2", 70, configy+160)
+      love.graphics.print("3", 130, configy+160)
+      love.graphics.print("4", 190, configy+160)
+      love.graphics.print("5", 250, configy+160)
       love.graphics.setColor(1, 1, 1)
     end,
     
@@ -80,6 +90,38 @@ function config(x,y)
     
   }
 end
+
+function skins(x,y)
+  --skins background 
+  local skinsbackgroundImage = love.graphics.newImage('Assets/gamebackground.jpg')
+  
+  -- font style
+  local font = love.graphics.newFont('Fonts/DIMIS___.TTF', 50)
+  
+  --pos x,y skins
+  local skinsx, skinsy = 90,15
+  return {
+    draw = function()
+      love.graphics.draw(skinsbackgroundImage, x, y)
+      grass:render()
+      dirt:render()
+      love.graphics.setColor(0, 0, 0)
+      love.graphics.setFont(font)
+      love.graphics.print("SKINS", skinsx, skinsy)
+      love.graphics.print("ESQ", 15, skinsy+140)
+      love.graphics.draw(birdimages[0], 140, skinsy+140)
+      love.graphics.print("DIR", 240, skinsy+140)
+      love.graphics.setColor(1, 1, 1)
+    end,
+    
+    keypressed = function(key)
+      if key == "escape" and gamemode == 3 then
+        gamemode = 0
+      end
+    end
+  }
+end
+
 
 
 function love.mousepressed(x, y, button)
@@ -97,6 +139,9 @@ function love.load()
   --menu config
   menu_config = config(0,0)
   
+  --menu skins
+  menu_skins = skins(0,0)
+  
   -- colors
   skyBlue = {.43, .77, 80}
   cream = {.87, .84, .58}
@@ -112,6 +157,10 @@ function love.load()
 
   -- background image
   backgroundImage = love.graphics.newImage('Assets/gamebackground.jpg')
+  
+  --bird sprites
+  birdimages = {}
+  birdimages[0] = love.graphics.newImage('Assets/birddrawing.png')
 
   --bird sprite
   birdImage = love.graphics.newImage('Assets/birddrawing.png')
@@ -237,6 +286,8 @@ function love.keypressed(key)
     end
   elseif gamemode == 2 then
     menu_config.keypressed(key)
+  elseif gamemode == 3 then
+    menu_skins.keypressed(key)
   end
 end
 --------------------------------------[UPDATE]------------------------------------
@@ -249,6 +300,9 @@ function love.draw()
     
   elseif gamemode == 2 then
     menu_config.draw()
+    
+  elseif gamemode == 3 then
+    menu_skins.draw()
     
   else
     love.graphics.draw(backgroundImage, 0, 0)
