@@ -6,11 +6,19 @@ gamemode = 0
 high_score = 0
 playing = false
 
-function menu(w,h,x,y)
+function menu(x,y)
   --menu background 
   local menubackgroundImage = love.graphics.newImage('Assets/gamebackground.jpg')
+  
   -- font style
   local font = love.graphics.newFont('Fonts/DIMIS___.TTF', 50)
+  
+  --pos x,y menu
+  local menux,menuy = 100,15
+  
+  --check what item was clicked
+  local click_item = function(mx, my, x, y) return (mx>x) and (mx<x+130) and (my>y) and (my<y+50) end
+  
   return {
     draw = function()
       love.graphics.draw(menubackgroundImage, x, y)
@@ -18,9 +26,9 @@ function menu(w,h,x,y)
       dirt:render()
       love.graphics.setColor(0, 0, 0)
       love.graphics.setFont(font)
-      love.graphics.print("MENU", 100, 15)
-      love.graphics.print("START", 95, 105)
-      love.graphics.print("CONFIG", 90, 205)
+      love.graphics.print("MENU", menux, menuy)
+      love.graphics.print("START", menux-5, menuy+90)
+      love.graphics.print("CONFIG", menux-10, menuy+180)
       love.graphics.setColor(1, 1, 1)
     end,
     keypressed = function(key)
@@ -30,9 +38,52 @@ function menu(w,h,x,y)
       if key == "c" and gamemode == 0 then
         gamemode = 2
       end
-      
+    end, 
+    mousepressed = function(mx,my,button)
+      if button == 1 and click_item(mx,my,menux-5,menuy+90) then
+        gamemode = 1
+      elseif button == 1 and click_item(mx,my,menux-10,menuy+180) then
+        gamemode = 2
+      end
     end
   }
+end
+
+function config(x,y)
+  --config background 
+  local configbackgroundImage = love.graphics.newImage('Assets/gamebackground.jpg')
+  
+  -- font style
+  local font = love.graphics.newFont('Fonts/DIMIS___.TTF', 50)
+  
+  --pos x,y config
+  local configx, configy = 90,15
+  
+  return {
+    draw = function()
+      love.graphics.draw(configbackgroundImage, x, y)
+      grass:render()
+      dirt:render()
+      love.graphics.setColor(0, 0, 0)
+      love.graphics.setFont(font)
+      love.graphics.print("CONFIG", configx, configy)
+      love.graphics.print("ITEM1", configx+5, configy+90)
+      love.graphics.print("ITEM2", configx+5, configy+180)
+      love.graphics.setColor(1, 1, 1)
+    end,
+    
+    keypressed = function(key)
+      if key == "escape" and gamemode == 2 then
+        gamemode = 0
+      end
+    end
+    
+  }
+end
+
+
+function love.mousepressed(x, y, button)
+  menu_inicial.mousepressed(x,y,button) 
 end
 
 function love.load()
@@ -41,7 +92,10 @@ function love.load()
   WINDOW_HEIGHT = love.graphics.getHeight()
   
   --menu
-  menu_inicial = menu(WINDOW_WIDTH,WINDOW_HEIGHT,0,0)
+  menu_inicial = menu(0,0)
+  
+  --menu config
+  menu_config = config(0,0)
   
   -- colors
   skyBlue = {.43, .77, 80}
@@ -181,6 +235,8 @@ function love.keypressed(key)
     elseif key == 'p' and playing == true then
       playing = false
     end
+  elseif gamemode == 2 then
+    menu_config.keypressed(key)
   end
 end
 --------------------------------------[UPDATE]------------------------------------
@@ -190,6 +246,10 @@ end
 function love.draw()
   if gamemode == 0 then
     menu_inicial.draw()
+    
+  elseif gamemode == 2 then
+    menu_config.draw()
+    
   else
     love.graphics.draw(backgroundImage, 0, 0)
     pipe1:render()
@@ -207,7 +267,7 @@ function love.draw()
     if playing == false then
       love.graphics.print("Pause", 125, 400, 0, 0.5)
     end
-  
+    
     love.graphics.setColor(1, 1, 1)
   end
   
