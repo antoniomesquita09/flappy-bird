@@ -39,6 +39,7 @@ function Bird:collision(p)
 end
 
 function Bird:render()
-  love.graphics.draw(birdImage, self.x, self.y)
+  angle = (self.gravity/700)*math.pi/4
+  love.graphics.draw(birdImage, self.x, self.y, angle)
   love.graphics.setColor(1, 1, 1)
 end
