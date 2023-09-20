@@ -22,7 +22,7 @@ function Bird:jump()
 end
 
 Bird.cojump = function(self)
-  while self.y > 0 do
+  while true do
     self.gravity = -265
     coroutine.yield()
   end
