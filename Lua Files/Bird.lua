@@ -1,45 +1,37 @@
 -- Bird.lua
 
-Bird = Class{}
-
-function Bird:init()
-  self.x = 75
-  self.y = 180
-  self.width = birdImage:getWidth()
-  self.height = birdImage:getHeight()
-  self.gravity = 0
-end
-
-function Bird:update(dt)
-  self.gravity = self.gravity + 956 * dt
-  self.y = self.y + self.gravity * dt
-end
-
-function Bird:jump()
-  if self.y > 0 then
-    self.gravity = -265
-  end
-end
-
-Bird.cojump = function(self)
-  while true do
-    self.gravity = -265
-    coroutine.yield()
-  end
-end
-
-function Bird:collision(p)
-  if self.x > p.x + p.width or p.x > self.x + self.width then
-    return false
-  end
-  if self.y > p.y + p.height or p.y > self.y + self.height then
-    return false
-  end
-  return true
-end
-
-function Bird:render()
-  angle = (self.gravity/700)*math.pi/4
-  love.graphics.draw(birdImage, self.x, self.y, angle)
-  love.graphics.setColor(1, 1, 1)
+function createBird(sprite)
+  birdImage = sprite
+  width = birdImage:getWidth()
+  height = birdImage:getHeight()
+  
+  return {
+    x = 75,
+    y = 180,
+    gravity = 0,
+    update = function(self, dt)
+      self.gravity = self.gravity + 956 * dt
+      self.y = self.y + self.gravity * dt
+    end,
+    jump = function(self)
+      while true do
+        self.gravity = -265
+        coroutine.yield()
+      end
+    end,
+    collision = function(self, p)
+      if self.x > p.x + p.width or p.x > self.x + width then
+        return false
+      end
+      if self.y > p.y + p.height or p.y > self.y + height then
+        return false
+      end
+      return true
+    end,
+    draw = function(self)
+      angle = (self.gravity/700)*math.pi/4
+      love.graphics.draw(birdImage, self.x, self.y, angle)
+      love.graphics.setColor(1, 1, 1)
+    end
+  }
 end

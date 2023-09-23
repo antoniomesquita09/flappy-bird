@@ -1,20 +1,19 @@
 -- upwardPipes.lua
 
-upwardPipes = Class{}
-
-function upwardPipes:init(x, y)
-  self.x = x
-  self.y = y
-  self.width = pipeUp:getWidth()
-  self.height = pipeUp:getHeight()
-  self.speed = 70
-end
-
-function upwardPipes:update(dt)
-  self.x = self.x - self.speed * dt
-end
-
-function upwardPipes:render()
-  love.graphics.draw(pipeUp, self.x, self.y)
-  love.graphics.setColor(1, 1, 1)
+function createUpwardPipes(sprite, init_x, init_y)
+  pipeUp = sprite
+  return {
+    x = init_x,
+    y = init_y,
+    width = pipeUp:getWidth(),
+    height = pipeUp:getHeight(),
+    speed = 70,
+    update = function(self, dt)
+      self.x = self.x - self.speed * dt
+    end,
+    draw = function(self)
+      love.graphics.draw(pipeUp, self.x, self.y)
+      love.graphics.setColor(1, 1, 1)
+    end
+  }
 end

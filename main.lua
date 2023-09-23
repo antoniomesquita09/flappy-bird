@@ -1,7 +1,5 @@
--- Blocky Bird by Ardens
--- Dec 25, 2020
-
 -- main.lua
+
 gamemode = 0
 high_score = 0
 playing = false
@@ -22,8 +20,8 @@ function menu(x,y)
   return {
     draw = function()
       love.graphics.draw(menubackgroundImage, x, y)
-      grass:render()
-      dirt:render()
+      grass:draw()
+      dirt:draw()
       love.graphics.setColor(0, 0, 0)
       love.graphics.setFont(font)
       love.graphics.print("MENU", menux, menuy)
@@ -68,8 +66,8 @@ function config(x,y)
   return {
     draw = function()
       love.graphics.draw(configbackgroundImage, x, y)
-      grass:render()
-      dirt:render()
+      grass:draw()
+      dirt:draw()
       love.graphics.setColor(0, 0, 0)
       love.graphics.setFont(font)
       love.graphics.print("CONFIG", configx, configy)
@@ -103,8 +101,8 @@ function skins(x,y)
   return {
     draw = function()
       love.graphics.draw(skinsbackgroundImage, x, y)
-      grass:render()
-      dirt:render()
+      grass:draw()
+      dirt:draw()
       love.graphics.draw(birdimages[0], 140, skinsy+140)
       love.graphics.setColor(0, 0, 0)
       love.graphics.setFont(font)
@@ -183,26 +181,25 @@ function love.load()
   WINDOW_HEIGHT = love.graphics.getHeight()
 
   -- requiring files
-  Class = require('Lua Files/Class')
-  bird = require('Lua Files/Bird')
-  ground = require('Lua Files/Ground')
-  downwardpipe = require('Lua Files/downwardPipes')
-  upwardpipe = require('Lua Files/upwardPipes')
+  require('Lua Files/Bird')
+  require('Lua Files/Ground')
+  require('Lua Files/downwardPipes')
+  require('Lua Files/upwardPipes')
 
   -- instances
-  player = Bird()
-  dirt = Ground(0, 390, 315, 60, cream)
-  grass = Ground(0, 375, 315, 15, green)
+  player = createBird(birdImage)
+  dirt = createGround(0, 390, 315, 60, cream)
+  grass = createGround(0, 375, 315, 15, green)
 
   -- coroutine
-  cojump = coroutine.create(Bird.cojump, player)
+  cojump = coroutine.create(player.jump, player)
 
   function FirstPipes()
     -- pipe variables
     local pipeSpaceYMin = -120
     local pipeSpaceY = love.math.random(pipeSpaceYMin, -5)
-    pipe1 = downwardPipes(WINDOW_WIDTH, pipeSpaceY)
-    pipe2 = upwardPipes(WINDOW_WIDTH, pipeSpaceY+315)
+    pipe1 = createDownwardPipes(pipeDown, WINDOW_WIDTH, pipeSpaceY)
+    pipe2 = createUpwardPipes(pipeUp, WINDOW_WIDTH, pipeSpaceY+315)
   end
   FirstPipes()
 
@@ -210,8 +207,8 @@ function love.load()
     -- pipe variables
     local pipeSpaceYMin = -120
     local pipeSpaceY = love.math.random(pipeSpaceYMin, -5)
-    pipe3 = downwardPipes(490, pipeSpaceY)
-    pipe4 = upwardPipes(490, pipeSpaceY+315)
+    pipe3 = createDownwardPipes(pipeDown, 490, pipeSpaceY)
+    pipe4 = createUpwardPipes(pipeUp, 490, pipeSpaceY+315)
   end
   SecondPipes()
 
@@ -306,13 +303,13 @@ function love.draw()
     
   else
     love.graphics.draw(backgroundImage, 0, 0)
-    pipe1:render()
-    pipe2:render()
-    pipe3:render()
-    pipe4:render()
-    player:render()
-    grass:render()
-    dirt:render()
+    pipe1:draw()
+    pipe2:draw()
+    pipe3:draw()
+    pipe4:draw()
+    player:draw()
+    grass:draw()
+    dirt:draw()
 
     love.graphics.setColor(0, 0, 0)
     love.graphics.setFont(font)
