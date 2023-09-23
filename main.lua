@@ -196,19 +196,19 @@ function love.load()
 
   function FirstPipes()
     -- pipe variables
-    local pipeSpaceYMin = -120
+    local pipeSpaceYMin = -100
     local pipeSpaceY = love.math.random(pipeSpaceYMin, -5)
     pipe1 = createDownwardPipes(pipeDown, WINDOW_WIDTH, pipeSpaceY)
-    pipe2 = createUpwardPipes(pipeUp, WINDOW_WIDTH, pipeSpaceY+315)
+    pipe2 = createUpwardPipes(pipeUp, WINDOW_WIDTH, pipeSpaceY+300)
   end
   FirstPipes()
 
   function SecondPipes()
     -- pipe variables
-    local pipeSpaceYMin = -120
+    local pipeSpaceYMin = -100
     local pipeSpaceY = love.math.random(pipeSpaceYMin, -5)
     pipe3 = createDownwardPipes(pipeDown, 490, pipeSpaceY)
-    pipe4 = createUpwardPipes(pipeUp, 490, pipeSpaceY+315)
+    pipe4 = createUpwardPipes(pipeUp, 490, pipeSpaceY+300)
   end
   SecondPipes()
 

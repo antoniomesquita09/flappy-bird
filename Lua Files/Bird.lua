@@ -4,18 +4,19 @@ function createBird(sprite)
   birdImage = sprite
   width = birdImage:getWidth()
   height = birdImage:getHeight()
+  gravity = 982
   
   return {
     x = 75,
     y = 180,
-    gravity = 0,
+    velocity = 0,
     update = function(self, dt)
-      self.gravity = self.gravity + 956 * dt
-      self.y = self.y + self.gravity * dt
+      self.y = self.y + self.velocity * dt + gravity * dt * dt / 2
+      self.velocity = self.velocity + gravity * dt
     end,
     jump = function(self)
       while true do
-        self.gravity = -265
+        self.velocity = -300
         coroutine.yield()
       end
     end,
@@ -29,7 +30,7 @@ function createBird(sprite)
       return true
     end,
     draw = function(self)
-      angle = (self.gravity/700)*math.pi/4
+      angle = (self.velocity/700)*math.pi/4
       love.graphics.draw(birdImage, self.x, self.y, angle)
       love.graphics.setColor(1, 1, 1)
     end
