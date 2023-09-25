@@ -1,6 +1,21 @@
 -- main.lua
 
 gamemode = 0
+difficulty = 2
+difficulty_config = {
+  {
+    pipeTolerance=315,
+    gameSpeed=0.9
+  },
+  {
+    pipeTolerance=300,
+    gameSpeed=1
+  },
+  {
+    pipeTolerance=300,
+    gameSpeed=1.25
+  }
+}
 high_score = 0
 playing = false
 
@@ -24,7 +39,6 @@ function menu(x,y)
       dirt:draw()
       love.graphics.setColor(0, 0, 0)
       love.graphics.setFont(font)
-      love.graphics.print("MENU", menux, menuy)
       love.graphics.print("START", menux-5, menuy+90)
       love.graphics.print("CONFIG", menux-10, menuy+180)
       love.graphics.print("SKINS", menux-5, menuy+270)
@@ -63,6 +77,9 @@ function config(x,y)
   --pos x,y config
   local configx, configy = 90,15
   
+  --check what item was clicked
+  local click_item = function(mx, my, x, y) return (mx>x) and (mx<x+50) and (my>y) and (my<y+50) end
+  
   return {
     draw = function()
       love.graphics.draw(configbackgroundImage, x, y)
@@ -71,18 +88,28 @@ function config(x,y)
       love.graphics.setColor(0, 0, 0)
       love.graphics.setFont(font)
       love.graphics.print("CONFIG", configx, configy)
-      love.graphics.print("LEVEL:", 15, configy+90)
-      love.graphics.print("1", 20, configy+160)
-      love.graphics.print("2", 70, configy+160)
-      love.graphics.print("3", 130, configy+160)
-      love.graphics.print("4", 190, configy+160)
-      love.graphics.print("5", 250, configy+160)
+      love.graphics.print(string.format("DIFFICULTY: %d", difficulty), 15, configy+90)
+      love.graphics.print("1", 140, configy+180)
+      love.graphics.print("2", 140, configy+240)
+      love.graphics.print("3", 140, configy+300)
       love.graphics.setColor(1, 1, 1)
     end,
     
     keypressed = function(key)
       if key == "escape" and gamemode == 2 then
         gamemode = 0
+        love.load()
+      end
+    end,
+    
+    mousepressed = function(mx,my,button)
+      
+      if button == 1 and gamemode == 2 and click_item(mx,my,140-10,configy+180) then
+        difficulty = 1
+      elseif button == 1 and gamemode == 2 and click_item(mx,my,140-10,configy+240) then
+        difficulty = 2
+      elseif button == 1 and gamemode == 2 and click_item(mx,my,140-10,configy+300) then
+        difficulty = 3
       end
     end
     
@@ -118,12 +145,6 @@ function skins(x,y)
       end
     end
   }
-end
-
-
-
-function love.mousepressed(x, y, button)
-  menu_inicial.mousepressed(x,y,button) 
 end
 
 function love.load()
@@ -199,7 +220,7 @@ function love.load()
     local pipeSpaceYMin = -100
     local pipeSpaceY = love.math.random(pipeSpaceYMin, -5)
     pipe1 = createDownwardPipes(pipeDown, WINDOW_WIDTH, pipeSpaceY)
-    pipe2 = createUpwardPipes(pipeUp, WINDOW_WIDTH, pipeSpaceY+300)
+    pipe2 = createUpwardPipes(pipeUp, WINDOW_WIDTH, pipeSpaceY+difficulty_config[difficulty]["pipeTolerance"])
   end
   FirstPipes()
 
@@ -208,7 +229,7 @@ function love.load()
     local pipeSpaceYMin = -100
     local pipeSpaceY = love.math.random(pipeSpaceYMin, -5)
     pipe3 = createDownwardPipes(pipeDown, 490, pipeSpaceY)
-    pipe4 = createUpwardPipes(pipeUp, 490, pipeSpaceY+300)
+    pipe4 = createUpwardPipes(pipeUp, 490, pipeSpaceY+difficulty_config[difficulty]["pipeTolerance"])
   end
   SecondPipes()
 
@@ -229,12 +250,13 @@ function love.update(dt)
       pipe3.x = WINDOW_WIDTH
       pipe4.x = WINDOW_WIDTH
     end
-
-    player:update(dt)
-    pipe1:update(dt)
-    pipe2:update(dt)
-    pipe3:update(dt)
-    pipe4:update(dt)
+    
+    speed = difficulty_config[difficulty]["gameSpeed"]
+    player:update(dt*speed)
+    pipe1:update(dt*speed)
+    pipe2:update(dt*speed)
+    pipe3:update(dt*speed)
+    pipe4:update(dt*speed)
 
     if player:collision(pipe1) then
       love.load()
@@ -270,6 +292,14 @@ function love.update(dt)
   end
 end
 
+function love.mousepressed(x, y, button)
+  if gamemode == 0 then
+    menu_inicial.mousepressed(x,y,button)
+  elseif gamemode == 2 then
+    menu_config.mousepressed(x,y,button)
+  end
+end
+
 function love.keypressed(key)
   if gamemode == 0 then
     menu_inicial.keypressed(key)
@@ -278,8 +308,11 @@ function love.keypressed(key)
       playing = true
       coroutine.resume(cojump, player)
       jumpSound:play()
-    elseif key == 'p' and playing == true then
+    elseif (key == 'p' or key == 'escape') and playing == true then
       playing = false
+    elseif key == 'escape' and playing == false then
+      gamemode = 0
+      love.load()
     end
   elseif gamemode == 2 then
     menu_config.keypressed(key)
