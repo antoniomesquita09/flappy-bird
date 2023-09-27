@@ -41,18 +41,13 @@ function menu(x,y)
       love.graphics.setFont(font)
       love.graphics.print("START", menux-5, menuy+90)
       love.graphics.print("CONFIG", menux-10, menuy+180)
-      love.graphics.print("SKINS", menux-5, menuy+270)
       love.graphics.setColor(1, 1, 1)
     end,
     keypressed = function(key)
       if key == "space" and gamemode == 0 then
         gamemode = 1
-      end
-      if key == "c" and gamemode == 0 then
+      elseif key == "c" and gamemode == 0 then
         gamemode = 2
-      end
-      if key == "s" and gamemode == 0 then
-        gamemode = 3
       end
     end, 
     mousepressed = function(mx,my,button)
@@ -60,8 +55,6 @@ function menu(x,y)
         gamemode = 1
       elseif button == 1 and gamemode ==0 and click_item(mx,my,menux-10,menuy+180) then
         gamemode = 2
-      elseif button == 1 and gamemode ==0 and click_item(mx,my,menux-5,menuy+270) then
-        gamemode = 3
       end
     end
   }
@@ -116,37 +109,6 @@ function config(x,y)
   }
 end
 
-function skins(x,y)
-  --skins background 
-  local skinsbackgroundImage = love.graphics.newImage('Assets/gamebackground.jpg')
-  
-  -- font style
-  local font = love.graphics.newFont('Fonts/DIMIS___.TTF', 50)
-  
-  --pos x,y skins
-  local skinsx, skinsy = 90,15
-  return {
-    draw = function()
-      love.graphics.draw(skinsbackgroundImage, x, y)
-      grass:draw()
-      dirt:draw()
-      love.graphics.draw(birdimages[0], 140, skinsy+140)
-      love.graphics.setColor(0, 0, 0)
-      love.graphics.setFont(font)
-      love.graphics.print("SKINS", skinsx, skinsy)
-      love.graphics.print("ESQ", 15, skinsy+140)
-      love.graphics.print("DIR", 240, skinsy+140)
-      love.graphics.setColor(1, 1, 1)
-    end,
-    
-    keypressed = function(key)
-      if key == "escape" and gamemode == 3 then
-        gamemode = 0
-      end
-    end
-  }
-end
-
 function love.load()
   -- game screen dimensions
   WINDOW_WIDTH = love.graphics.getWidth()
@@ -157,9 +119,6 @@ function love.load()
   
   --menu config
   menu_config = config(0,0)
-  
-  --menu skins
-  menu_skins = skins(0,0)
   
   -- colors
   skyBlue = {.43, .77, 80}
@@ -316,8 +275,6 @@ function love.keypressed(key)
     end
   elseif gamemode == 2 then
     menu_config.keypressed(key)
-  elseif gamemode == 3 then
-    menu_skins.keypressed(key)
   end
 end
 --------------------------------------[UPDATE]------------------------------------
@@ -330,9 +287,6 @@ function love.draw()
     
   elseif gamemode == 2 then
     menu_config.draw()
-    
-  elseif gamemode == 3 then
-    menu_skins.draw()
     
   else
     love.graphics.draw(backgroundImage, 0, 0)
